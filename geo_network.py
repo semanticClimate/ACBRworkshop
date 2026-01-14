@@ -1,10 +1,6 @@
 # =========================
 # PMC–Country–Continent Network (Dynamic, Single Cell)
 # =========================
-
-# Install required libraries (Colab-safe)
-!pip -q install pycountry pycountry-convert
-
 import pandas as pd
 import re, json
 import networkx as nx
