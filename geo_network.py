@@ -30,9 +30,9 @@ def wikipedia_url(title):
 
 # -------- Colors --------
 color_map = {
-    "PMC": "#0055ff",
+    "PMC": "#3b71cd",
     "COUNTRY": "#e377c2",
-    "CONTINENT": "#2ca02c"
+    "CONTINENT": "#5A4E11"
 }
 
 # -------- Build graph --------
