@@ -8,9 +8,20 @@ import networkx as nx
 from collections import defaultdict
 import pycountry
 import pycountry_convert as pc
+import argparse
 
-# -------- INPUT CSV --------
-csv_file = "/content/result_drug_data/fin_disData.csv"
+# -------- Command-line arguments for input/output --------
+parser = argparse.ArgumentParser(description="PMC–Country–Continent Network")
+parser.add_argument("--input", type=str, required=True, help="Path to input CSV file")
+parser.add_argument("--graphml", type=str, required=True, help="Path to save GraphML file")
+parser.add_argument("--html", type=str, required=True, help="Path to save HTML file")
+args = parser.parse_args()
+
+csv_file = args.input
+graphml_path = args.graphml
+html_path = args.html
+
+# -------- Load CSV --------
 df = pd.read_csv(csv_file)
 
 # -------- Dynamic Country → Continent function --------
@@ -83,7 +94,6 @@ for (s, t), w in edge_weights.items():
         G[s][t]["weight"] = w
 
 # -------- Export GraphML --------
-graphml_path = "/content/pmc_country_continent.graphml"
 nx.write_graphml(G, graphml_path)
 print(f"✔ GraphML exported for Cytoscape Desktop: {graphml_path}")
 
@@ -111,8 +121,6 @@ for s, t, d in G.edges(data=True):
     })
 
 # -------- Save HTML for Colab --------
-html_path = "/content/pmc_country_continent.html"
-
 with open(html_path, "w") as f:
     f.write(f"""<!DOCTYPE html>
 <html>
