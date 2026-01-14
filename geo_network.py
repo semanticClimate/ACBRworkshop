@@ -1,11 +1,11 @@
 # =========================
-# PMC–Country–Continent Network (Dynamic, Single Cell)
+# PMC–Country–Continent Network (Dynamic, Colab-ready)
 # =========================
+
 import pandas as pd
 import re, json
 import networkx as nx
 from collections import defaultdict
-from IPython.display import HTML, display
 import pycountry
 import pycountry_convert as pc
 
@@ -23,13 +23,10 @@ def country_to_continent(country_name):
     except Exception:
         return "Unknown"
 
-# -------- Wikipedia / Wikidata helpers --------
+# -------- Wikipedia helpers --------
 def wikipedia_url(title):
     title = title.replace(" ", "_")
     return f"https://en.wikipedia.org/wiki/{title}"
-
-def wikidata_search_url(title):
-    return f"https://www.wikidata.org/wiki/Special:Search?search={title.replace(' ', '%20')}"
 
 # -------- Colors --------
 color_map = {
@@ -54,7 +51,7 @@ for _, row in df.iterrows():
         c.strip() for c in str(row["0"]).split(",") if c.strip()
     }
 
-    # PMC node (PubMed Central)
+    # PMC node
     G.add_node(
         pmc,
         type="PMC",
@@ -64,25 +61,20 @@ for _, row in df.iterrows():
     for country in countries:
         continent = country_to_continent(country)
 
-        # Country node (Wikipedia)
         G.add_node(
             country,
             type="COUNTRY",
             url=wikipedia_url(country)
         )
 
-        # Continent node (Wikipedia)
         G.add_node(
             continent,
             type="CONTINENT",
             url=wikipedia_url(continent)
         )
 
-        # PMC → Country (row-level frequency)
         edge_weights[(pmc, country)] += 1
         G.add_edge(pmc, country)
-
-        # Country → Continent (structural)
         G.add_edge(country, continent)
 
 # -------- Assign edge weights --------
@@ -118,47 +110,59 @@ for s, t, d in G.edges(data=True):
         }
     })
 
+# -------- Save HTML for Colab --------
 html_path = "/content/pmc_country_continent.html"
 
 with open(html_path, "w") as f:
-    f.write(f"""
+    f.write(f"""<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>PMC–Country–Continent Network</title>
+<script src="https://unpkg.com/cytoscape@3.21.2/dist/cytoscape.min.js"></script>
+</head>
+<body>
+
 <div id="cy" style="width:100%; height:750px; border:1px solid #ccc;"></div>
 
-<script src="https://unpkg.com/cytoscape@3.21.2/dist/cytoscape.min.js"></script>
-
 <script>
-var cy = cytoscape({{
-  container: document.getElementById('cy'),
-  elements: {json.dumps(elements)},
-  style: [
-    {{
-      selector: 'node',
-      style: {{
-        'label': 'data(label)',
-        'background-color': 'data(color)',
-        'font-size': '10px',
-        'text-valign': 'center',
-        'text-halign': 'center'
+document.addEventListener("DOMContentLoaded", function() {{
+  var cy = cytoscape({{
+    container: document.getElementById('cy'),
+    elements: {json.dumps(elements)},
+    style: [
+      {{
+        selector: 'node',
+        style: {{
+          'label': 'data(label)',
+          'background-color': 'data(color)',
+          'font-size': '10px',
+          'text-valign': 'center',
+          'text-halign': 'center'
+        }}
+      }},
+      {{
+        selector: 'edge',
+        style: {{
+          'width': 'mapData(weight, 1, 10, 1, 6)',
+          'line-color': '#999'
+        }}
       }}
-    }},
-    {{
-      selector: 'edge',
-      style: {{
-        'width': 'mapData(weight, 1, 10, 1, 6)',
-        'line-color': '#999'
-      }}
-    }}
-  ],
-  layout: {{ name: 'cose' }}
-}});
+    ],
+    layout: {{ name: 'cose' }}
+  }});
 
-cy.on('tap', 'node', function(evt) {{
-  const url = evt.target.data('url');
-  if (url) {{
-    window.open(url, '_blank');
-  }}
+  cy.on('tap', 'node', function(evt) {{
+    const url = evt.target.data('url');
+    if (url) {{
+      window.open(url, '_blank');
+    }}
+  }});
 }});
 </script>
+
+</body>
+</html>
 """)
 
 print(f"✔ Interactive HTML saved: {html_path}")
