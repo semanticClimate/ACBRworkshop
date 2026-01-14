@@ -8,6 +8,18 @@ import networkx as nx
 from collections import defaultdict
 import argparse
 
+# =========================
+# Node color mapping  ← ADD IT HERE
+# =========================
+color_map = {
+    "PMC": "#1f77b4",        # blue
+    "COUNTRY": "#2ca02c",    # green
+    "DISEASE": "#d62728",    # red
+    "DRUG": "#9467bd",       # purple
+    "CONTINENT": "#8c564b",  # brown
+    "UNKNOWN": "#cccccc"     # grey fallback
+}
+
 # -------- CLI arguments --------
 parser = argparse.ArgumentParser()
 parser.add_argument("--country", required=True, help="Country CSV")
@@ -36,14 +48,6 @@ def extract_pmc(path):
 # -------- Graph --------
 G = nx.Graph()
 edge_w = defaultdict(int)
-
-# -------- COLORS --------
-COLORS = {
-    "PMC": "#3b71cd",
-    "COUNTRY": "#2ca02c",
-    "DISEASE": "#9467bd",
-    "DRUG": "#d62728"
-}
 
 # ========================
 # COUNTRY → PMC
@@ -111,13 +115,15 @@ print("✔ GraphML exported")
 elements = []
 
 for n, d in G.nodes(data=True):
+    node_type = d.get("type", "UNKNOWN")
+
     elements.append({
         "data": {
             "id": n,
             "label": n,
-            "type": d["type"],
-            "color": COLORS[d["type"]],
-            "url": d["url"]
+            "type": node_type,
+            "color": color_map.get(node_type, "#cccccc"),
+            "url": d.get("url")
         }
     })
 
