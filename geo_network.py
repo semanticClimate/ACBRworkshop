@@ -118,8 +118,10 @@ for s, t, d in G.edges(data=True):
         }
     })
 
-# -------- Render Cytoscape.js --------
-display(HTML(f"""
+html_path = "/content/pmc_country_continent.html"
+
+with open(html_path, "w") as f:
+    f.write(f"""
 <div id="cy" style="width:100%; height:750px; border:1px solid #ccc;"></div>
 
 <script src="https://unpkg.com/cytoscape@3.21.2/dist/cytoscape.min.js"></script>
@@ -157,4 +159,6 @@ cy.on('tap', 'node', function(evt) {{
   }}
 }});
 </script>
-"""))
+""")
+
+print(f"✔ Interactive HTML saved: {html_path}")
