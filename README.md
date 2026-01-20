@@ -16,3 +16,9 @@
 - #### 3:30-4:30 pm: Dr. Renu Kumari, Mandeep and Priti
 - #### Title: AI for Literature Reviews: Case Study: Drug Discovery
 
+### Notebook used for hands-on session | [Click here](https://github.com/semanticClimate/ACBRworkshop/blob/main/lit_review_drugDiscovery.ipynb)
+
+### Presentation | [Click Here](https://github.com/semanticClimate/ACBRworkshop/blob/main/workshop_ACBR16Jan.pptx)
+
+**[Click here to see event highlights](https://semanticclimate.github.io/p/en/posts/ACBR_event/)** 
+
